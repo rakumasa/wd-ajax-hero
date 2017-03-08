@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const movies = [];
+  var movies = [];
 
   const renderMovies = function() {
     $('#listings').empty();
@@ -57,4 +57,49 @@
   };
 
   // ADD YOUR CODE HERE
+
+  $('.btn-large.waves-effect.waves-light').click(function(e){
+    movies=[];
+    var input = $("#search").val(); //get the title from input
+    e.preventDefault();
+    if( input.length === 0 ) {
+      alert("No input!")
+    } else {
+    $.getJSON('http://www.omdbapi.com/?s=' + encodeURI(input)).then(function(response){
+      var movies_collection = response.Search
+      // console.log(movies_collection)
+      for (var i=0;i<movies_collection.length;i++){
+        var new_object = {
+          id: movies_collection[i].imdbID ,
+          poster:   movies_collection[i].Poster,
+          title: movies_collection[i].Title,
+          year: movies_collection[i].Year,
+        }
+          movies.push(new_object);
+      }
+      renderMovies();
+
+      $('.waves-effect.waves-light.btn.modal-trigger').click(function(){
+        var rule = new RegExp("#","ig");
+        var getId = $(this).attr("href").replace(rule,"");
+        console.log('http://www.omdbapi.com/?i=' + getId + '&plot=full')
+        $.getJSON('http://www.omdbapi.com/?i=' + getId + '&plot=full', function(data) {
+          $('.modal-content p').append(data.Plot);
+
+          console.log(data.Plot);
+        })
+
+
+
+      })
+
+
+
+
+
+    }) //End of JSON
+  } // End of if statement
+
+
+  })
 })();
